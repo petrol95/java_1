@@ -1,4 +1,9 @@
-// HomeWork1
+/**
+ * Java. Level 1. Lesson 1. Homework 1
+ *
+ * @author Olga Petrova
+ * @version dated Sep 12, 2018
+ */
 
 public class HomeWork1 {
     byte b = 1;
