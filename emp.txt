@@ -1,0 +1,6 @@
+Ivanov Ivan, Director, ivivan@mailbox.com, 89152345678, 100000, 55
+Petrov Petr, Manager, petrov@mailbox.com, 89237653456, 60000, 30
+Alexandrov Alexander, Engineer, alex@mailbox.com, 85672346578, 45000, 60
+Kozlov Mikhail, Engineer, kozlov@mailbox.com, 85672345678, 33000, 41
+Malinin Oleg, Engineer, malinin@mailbox.com, 89274567658, 30000, 25
+Kuzmina Maria, Engineer, kuzmina@mailbox.com, 8345678734, 28000, 48
