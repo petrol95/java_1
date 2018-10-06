@@ -1,0 +1,9 @@
+/**
+ * Java. Level 1. Lesson 8. Homework 8
+ *
+ * @author Olga Petrova
+ * @version dated Oct 6, 2018
+ */
+
+// Ссылка на сертификат
+https://geekbrains.ru/go/my--Hv
