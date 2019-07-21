@@ -6,87 +6,81 @@ import java.awt.event.*;
  * Java. Level 1. Lesson 7. Homework 7
  *
  * @author Olga Petrova
- * @version dated Oct 4, 2018
+ * @version dated Jul 21, 2019
  */
 
-public class HomeWork7 extends JFrame implements ActionListener {
-
-    private JLabel plateLabel;
-    private JButton addFood;
-    private JButton feedCats;
-    private JTextField field;
-    private MyCanvas canv;
-    private JPanel buttonsPanel;
-    private JPanel labelPanel;
-    private Cat[] cats = {new Cat("Barsik", 10), new Cat("Murzik", 5), new Cat("Poushok", 15)};
-    private Plate plate = new Plate(0);
-    private boolean[] fullness = {false, false, false}; // array for redrawing
-
-    public HomeWork7() {
-
-        setTitle("Feed Cats"); 
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setBounds(100, 100, 450, 300);
-        setLayout(new BorderLayout());
-        
-        // Canvas for drawing
-        canv = new MyCanvas();
-        canv.init(fullness);
-        add(canv, BorderLayout.CENTER);
-        
-        // Button panel
-        buttonsPanel = new JPanel();
-        add(buttonsPanel, BorderLayout.SOUTH);
-        
-        field = new JTextField("25", 2);
-        buttonsPanel.add(field);
-
-        addFood = new JButton("Add Food");
-        addFood.addActionListener(this);
-        buttonsPanel.add(addFood);
-
-        feedCats = new JButton("Feed Cats");
-        feedCats.addActionListener(this);
-        buttonsPanel.add(feedCats);
-         
-        // Label panel
-        labelPanel = new JPanel();
-        add(labelPanel, BorderLayout.NORTH);
-        plateLabel = new JLabel("Food: 0");
-        labelPanel.add(plateLabel);
-        
-        setVisible(true);
+class HomeWork7 extends JFrame {
+    
+    final String WINDOW_TITLE = "Feed Cats";
+    final String BUTTON_ADD_FOOD = "Add Food";
+    final String BUTTON_FEED_CATS = "Feed Cats";
+    final int WINDOW_WIDTH = 450;
+    final int WINDOW_HEIGHT = 300;
+    
+    Cat[] cats = {new Cat("Barsik", 10), new Cat("Murzik", 5), new Cat("Poushok", 15)};
+    boolean[] fullness = {false, false, false}; // array for redrawing;
+    Panel panel;
+    Plate plate;
+    JLabel plateLabel;
+    
+    public static void main(String[] args) {
+        new HomeWork7();
     }
-
-    // Event handler
-    public void actionPerformed(ActionEvent ae) {
-        if (ae.getSource() == feedCats) {
-            for (int i = 0; i < cats.length; i++) {
-                cats[i].eat(plate);
-                fullness[i] = cats[i].getFullness();
-                System.out.println(cats[i]);
-            }
-            System.out.println(plate);
-            updateFood(plate.getFood());
-            // Redrawing
-            canv.init(fullness);
-            canv.update(getGraphics());
-            canv.repaint();
-        } else if (ae.getSource() == addFood) {
-            try {
-                plate.increaseFood(Integer.parseInt(field.getText()));
-                } catch (NumberFormatException e) {
+    
+    HomeWork7() {
+        setTitle(WINDOW_TITLE); 
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+        setLocationRelativeTo(null);
+        setResizable(false);
+        
+        panel = new Panel();
+        plate = new Plate(0);
+        JTextField field = new JTextField("25", 2);
+        plateLabel = new JLabel("Food: 0");
+        
+        JButton buttonAdd = new JButton(BUTTON_ADD_FOOD);
+        buttonAdd.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    plate.increaseFood(Integer.parseInt(field.getText()));
+                } catch (NumberFormatException ex) {
                     System.err.println("Wrong format!");
                 }
             System.out.println(plate);
             updateFood(plate.getFood());
-        } else {
-            setVisible(false);
-            return;
-        }
-    }
+            panel.repaint();
+            }
+        });
+        JButton buttonFeed = new JButton(BUTTON_FEED_CATS);
+        buttonFeed.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                for (int i = 0; i < cats.length; i++) {
+                    cats[i].eat(plate);
+                    fullness[i] = cats[i].getFullness();
+                    System.out.println(cats[i]);
+                }
+            System.out.println(plate);
+            updateFood(plate.getFood());
+            panel.repaint();
+            }
+        });
+        
+        JPanel buttonPanel = new JPanel();
+        add(buttonPanel, BorderLayout.SOUTH);
+        buttonPanel.add(field);
+        buttonPanel.add(buttonAdd);
+        buttonPanel.add(buttonFeed);
+        
+        JPanel labelPanel = new JPanel(); 
+        add(labelPanel, BorderLayout.NORTH);
+        labelPanel.add(plateLabel);
 
-// Update label Food
+        add(panel, BorderLayout.CENTER);
+        setVisible(true);
+    }
+    
+    // Update label Food
     void updateFood(int num) {
         if (num >= 0) {
             plateLabel.setText("Food: " + num);
@@ -94,11 +88,30 @@ public class HomeWork7 extends JFrame implements ActionListener {
                 plateLabel.setText("Please add food");
         }
     }
-
-    public static void main(String[] args) {
-        HomeWork7 myWindow = new HomeWork7();
+    
+    class Panel extends JPanel { // for drawing
+        @Override
+        public void paint(Graphics g) {
+            super.paint(g);
+            for (int i = 0; i < 3; i++) {
+                g.setColor(new Color(255 - 100 * i, 127, 127));
+                // Whiskers and tails
+                g.drawLine(40 + 120 * i, 90, 90 + 120 * i, 95);
+                g.drawLine(40 + 120 * i, 95, 90 + 120 * i, 90);
+                g.drawLine(140 + 120 * i, 60, 140 + 120 * i, 130);
+                // Hungry or fed 
+                if (fullness[i]) {
+                    g.fillOval(50 + 120 * i, 80, 30, 30);
+                    g.fillOval(60 + 120 * i, 100, 80, 50);
+                } else {
+                    g.drawOval(50 + 120 * i, 80, 30, 30);
+                    g.drawOval(60 + 120 * i, 100, 80, 50);
+                    g.drawLine(140 + 120 * i, 60, 140 + 120 * i, 130);
+                }
+            }
+        }
     }
-}
+}   
 
 // class Cat
 class Cat {
@@ -155,39 +168,4 @@ class Plate {
     public String toString() {
         return "Food: " + food;
     }
-}
-
-// Canvas for drawing
-class MyCanvas extends Canvas {
-
-    boolean[] fullness = new boolean[3];
-
-    // Drawing initialization
-    public void init(boolean[] fullness) {
-        for (int i = 0; i < 3; i++) {
-            this.fullness[i] = fullness[i];
-        }
-    }
-
-    // Drawing cats
-    public void paint(Graphics g) {
-        super.paint(g);
-        for (int i = 0; i < 3; i++) {
-            g.setColor(new Color(255 - 100 * i, 127, 127));
-            // Whiskers and tails
-            g.drawLine(40 + 120 * i, 90, 90 + 120 * i, 95);
-            g.drawLine(40 + 120 * i, 95, 90 + 120 * i, 90);
-            g.drawLine(140 + 120 * i, 60, 140 + 120 * i, 130);
-            // Hungry or fed 
-            if (fullness[i]) {
-                g.fillOval(50 + 120 * i, 80, 30, 30);
-                g.fillOval(60 + 120 * i, 100, 80, 50);
-            } else {
-                g.drawOval(50 + 120 * i, 80, 30, 30);
-                g.drawOval(60 + 120 * i, 100, 80, 50);
-                g.drawLine(140 + 120 * i, 60, 140 + 120 * i, 130);
-                
-            }
-        }
-    };
 }
