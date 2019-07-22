@@ -6,7 +6,7 @@ import java.awt.event.*;
  * Java. Level 1. Lesson 7. Homework 7
  *
  * @author Olga Petrova
- * @version dated Jul 21, 2019
+ * @version dated Jul 22, 2019
  */
 
 class HomeWork7 extends JFrame {
@@ -18,7 +18,6 @@ class HomeWork7 extends JFrame {
     final int WINDOW_HEIGHT = 300;
     
     Cat[] cats = {new Cat("Barsik", 10), new Cat("Murzik", 5), new Cat("Poushok", 15)};
-    boolean[] fullness = {false, false, false}; // array for redrawing;
     Panel panel;
     Plate plate;
     JLabel plateLabel;
@@ -48,7 +47,6 @@ class HomeWork7 extends JFrame {
                     System.err.println("Wrong format!");
                 }
             System.out.println(plate);
-            updateFood(plate.getFood());
             panel.repaint();
             }
         });
@@ -57,11 +55,9 @@ class HomeWork7 extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 for (int i = 0; i < cats.length; i++) {
                     cats[i].eat(plate);
-                    fullness[i] = cats[i].getFullness();
                     System.out.println(cats[i]);
                 }
             System.out.println(plate);
-            updateFood(plate.getFood());
             panel.repaint();
             }
         });
@@ -75,18 +71,9 @@ class HomeWork7 extends JFrame {
         JPanel labelPanel = new JPanel(); 
         add(labelPanel, BorderLayout.NORTH);
         labelPanel.add(plateLabel);
-
+        
         add(panel, BorderLayout.CENTER);
         setVisible(true);
-    }
-    
-    // Update label Food
-    void updateFood(int num) {
-        if (num >= 0) {
-            plateLabel.setText("Food: " + num);
-            if (num == 0)
-                plateLabel.setText("Please add food");
-        }
     }
     
     class Panel extends JPanel { // for drawing
@@ -100,7 +87,7 @@ class HomeWork7 extends JFrame {
                 g.drawLine(40 + 120 * i, 95, 90 + 120 * i, 90);
                 g.drawLine(140 + 120 * i, 60, 140 + 120 * i, 130);
                 // Hungry or fed 
-                if (fullness[i]) {
+                if (cats[i].getFullness()) {
                     g.fillOval(50 + 120 * i, 80, 30, 30);
                     g.fillOval(60 + 120 * i, 100, 80, 50);
                 } else {
@@ -109,6 +96,8 @@ class HomeWork7 extends JFrame {
                     g.drawLine(140 + 120 * i, 60, 140 + 120 * i, 130);
                 }
             }
+            int food = plate.getFood();
+            plateLabel.setText((food == 0) ? "Please add food" : "Food: " + food);
         }
     }
 }   
@@ -117,7 +106,7 @@ class HomeWork7 extends JFrame {
 class Cat {
     private String name;
     private int appetite;
-    boolean fullness;
+    private boolean fullness;
 
     Cat(String name, int appetite) {
         this.name = name;
@@ -130,16 +119,12 @@ class Cat {
     }
 
     void eat(Plate plate) {
-        if (plate.getFood() >= this.appetite) {
-            plate.dicreaseFood(appetite);
-            this.fullness = true;
-        } else
-            this.fullness = false;
+        fullness = plate.decreaseFood(appetite);
     }
 
     @Override
     public String toString() {
-        return name + ": " + fullness;
+        return name + "(" + appetite + "): " + fullness;
     }
 }
 
@@ -154,10 +139,12 @@ class Plate {
     int getFood() {
         return this.food;
     }
-
-    void dicreaseFood(int food) {
-        if (this.food >= food)
-            this.food -= food;
+    
+    boolean decreaseFood(int food) {
+        if (this.food < food)
+            return false;
+        this.food -= food;
+        return true;
     }
 
     void increaseFood(int food) {
